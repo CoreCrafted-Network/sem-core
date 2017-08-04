@@ -1,0 +1,3 @@
+header: '&7[&aSEM Core&7]'
+no-permission: '%header% &cYou are not supposed to change the dimension behavior!'
+no-db-connection: '%header% &cUnable to connect to database server, please contact administrators as soon as possible'

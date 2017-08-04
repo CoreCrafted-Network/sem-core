@@ -1,0 +1,9 @@
+name: SEM-Core
+main: net.corecrafted.semcore.AppLaunch
+version: 1.0.2-SNAPSHOT
+descripton: Core Implementation of Survival Expert Mode Server
+author: ThisTNTSquid
+commands:
+  sem:
+    description: SEM Core main command
+    usage: /sem [argument]
