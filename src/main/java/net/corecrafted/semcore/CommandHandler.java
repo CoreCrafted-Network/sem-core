@@ -4,25 +4,26 @@ import net.corecrafted.semcore.utils.ColorParser;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 
 public class CommandHandler implements CommandExecutor {
     private AppLaunch plugin;
-    private String header;
 
     public CommandHandler(AppLaunch plugin) {
         this.plugin = plugin;
-        header = plugin.getHeader();
     }
 
     public boolean onCommand(CommandSender commandSender, Command cmd, String s, String[] args) {
+        // Help and invalid command handling
         if (args.length==0 || args[0].equals("help") || args[0].equals("?")) {
-        //
             sendMainHelp(commandSender);
-
-        } else {
-            commandSender.sendMessage(ColorParser.parse(header + " "));
+            return true;
         }
+        if (args[0].equals("reload")){
+            plugin.loadFiles();
+            commandSender.sendMessage(ColorParser.parse(plugin.getHeader()+" &aConfig and messages files reloaded"));
+        }
+
+
 
         return true;
     }
@@ -33,6 +34,7 @@ public class CommandHandler implements CommandExecutor {
             sender.sendMessage(ColorParser.parse("&a/sem help,? &e- Display this help message"));
             sender.sendMessage(ColorParser.parse("&a/sem player &e- Show a list of operations on players"));
             sender.sendMessage(ColorParser.parse("&a/sem items &e- This option is not working"));
+            sender.sendMessage(ColorParser.parse("&a/sem reload &e- Reloads config and messages"));
         } else {
             sender.sendMessage(ColorParser.parse(plugin.getMessages().getString("no-permission").replaceAll("%header%",plugin.getHeader())));
         }

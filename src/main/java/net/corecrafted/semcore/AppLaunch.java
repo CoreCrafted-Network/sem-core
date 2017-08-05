@@ -9,24 +9,22 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.*;
-import java.util.HashMap;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Map;
-import java.util.Scanner;
-import java.util.logging.Logger;
 
 
 public class AppLaunch extends JavaPlugin {
-    Logger logger = getLogger();
-    PluginDescriptionFile pdf = getDescription();
-    ConsoleCommandSender console = getServer().getConsoleSender();
-    File configf, messagesf;
-    FileConfiguration config, messages;
-    Connection connection;
+    private PluginDescriptionFile pdf = getDescription();
+    private ConsoleCommandSender console = getServer().getConsoleSender();
+    private File configf, messagesf;
+    private FileConfiguration config, messages;
+    private Connection connection;
 
-    String header = "&7[&aSEM Core&7]";
+    private String header = "&7[&2SEM Core&7]";
 
     public void onEnable() {
         console.sendMessage(ColorParser.parse("&8-=-=-=-=-=-=-=[ &aSEM Core &8]=-=-=-=-=-=-="));
@@ -50,7 +48,7 @@ public class AppLaunch extends JavaPlugin {
     }
 
 
-    private void loadFiles() {
+    void loadFiles() {
         configf = new File(getDataFolder(), "config.yml");
         messagesf = new File(getDataFolder(), "messages.yml");
 
@@ -93,16 +91,14 @@ public class AppLaunch extends JavaPlugin {
         header = messages.getString("header");
     }
 
-    private boolean testDbConn() {
+    private void testDbConn() {
         Map map = getDbConnInfo();
         try {
             connection = DriverManager.getConnection("jdbc:" + (String) map.get("host") + "/" + (String) map.get("schema"), (String) map.get("username"), (String) map.get("password"));
             console.sendMessage(ColorParser.parse(header + " &7>> Database server is working properly :)"));
-            return true;
         } catch (SQLException e) {
             console.sendMessage(ColorParser.parse(header + " &c>> Unable to connect to database, printing stacktrace..."));
             e.printStackTrace();
-            return false;
         }
     }
 
@@ -123,7 +119,7 @@ public class AppLaunch extends JavaPlugin {
 
     }
 
-    public Map getDbConnInfo() {
+    private Map getDbConnInfo() {
         Map map = config.getConfigurationSection("database").getValues(true);
         return map;
     }
