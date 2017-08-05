@@ -1,3 +1,15 @@
+#================
+#%header% - header of for the plugin messages
+
 header: '&7[&aSEM Core&7]'
 no-permission: '%header% &cYou are not supposed to change the dimension behavior!'
 no-db-connection: '%header% &cUnable to connect to database server, please contact administrators as soon as possible'
+
+# ============
+# %current_life% - Current amount of life left
+# %max_life% - Current maximum amount of life
+
+normal-death:
+  - '%header% &cYou just died while surviving this harsh world, 1 life is detected from you'
+  - '%header% &aYou currently have &a%current_life% out of %max_life% lifes left'
+player-kill-death: ''

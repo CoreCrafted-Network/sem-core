@@ -9,12 +9,12 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.logging.Logger;
 
 
@@ -39,29 +39,30 @@ public class AppLaunch extends JavaPlugin {
         loadFiles();
         console.sendMessage(ColorParser.parse(header + " &7>> Testing connection with database server...."));
         testDbConn();
+        console.sendMessage(ColorParser.parse(header + " &7>> Loading Database....."));
+        checkTablesExist();
         console.sendMessage(ColorParser.parse(header + " &7>> Registering commands and events...."));
         getCommand("sem").setExecutor(new CommandHandler(this));
-        getServer().getPluginManager().registerEvents(new DeathHandler(this),this);
+        getServer().getPluginManager().registerEvents(new DeathHandler(this), this);
         console.sendMessage(ColorParser.parse(header + " &7>> Initialization completed"));
 
         console.sendMessage(ColorParser.parse(header + " &aWelcome back to the reality"));
     }
 
 
-
     private void loadFiles() {
-        configf = new File(getDataFolder(),"config.yml");
-        messagesf = new File(getDataFolder(),"messages.yml");
+        configf = new File(getDataFolder(), "config.yml");
+        messagesf = new File(getDataFolder(), "messages.yml");
 
-        if (!configf.exists()){
+        if (!configf.exists()) {
             console.sendMessage(ColorParser.parse(header + " &8- Creating missing config.yml....."));
             configf.getParentFile().mkdir();
-            saveResource("config.yml",false);
+            saveResource("config.yml", false);
         }
-        if (!messagesf.exists()){
+        if (!messagesf.exists()) {
             console.sendMessage(ColorParser.parse(header + " &8- Creating missing messages.yml...."));
             messagesf.getParentFile().mkdir();
-            saveResource("messages.yml",false);
+            saveResource("messages.yml", false);
         }
         config = new YamlConfiguration();
         messages = new YamlConfiguration();
@@ -92,15 +93,34 @@ public class AppLaunch extends JavaPlugin {
         header = messages.getString("header");
     }
 
-    private void testDbConn() {
+    private boolean testDbConn() {
         Map map = getDbConnInfo();
         try {
             connection = DriverManager.getConnection("jdbc:" + (String) map.get("host") + "/" + (String) map.get("schema"), (String) map.get("username"), (String) map.get("password"));
             console.sendMessage(ColorParser.parse(header + " &7>> Database server is working properly :)"));
+            return true;
         } catch (SQLException e) {
             console.sendMessage(ColorParser.parse(header + " &c>> Unable to connect to database, printing stacktrace..."));
             e.printStackTrace();
+            return false;
         }
+    }
+
+    private void checkTablesExist() {
+        try {
+            String sqlscript = "create table IF NOT EXISTS player_death_rec( id int auto_increment primary key, uuid varchar(32) null, cause varchar(100) null, loc_world varchar(45) null, loc_x double null, loc_y double null, loc_z double null, datetime bigint(10) null) ;";
+            String sqlscript2 = " create table IF NOT EXISTS player_lifes( uuid varchar(32) not null primary key, current_life int null, max_life int null ) ;";
+//            System.out.println(sqlscript);
+//            System.out.println(sqlscript2);
+            PreparedStatement stmt = connection.prepareStatement(sqlscript);
+            stmt.execute();
+            stmt = connection.prepareStatement(sqlscript2);
+            stmt.execute();
+        } catch (SQLException e) {
+            console.sendMessage(ColorParser.parse(header + " &c>> Check failed since it is unable connect to database"));
+            e.printStackTrace();
+        }
+
     }
 
     public Map getDbConnInfo() {
@@ -112,11 +132,11 @@ public class AppLaunch extends JavaPlugin {
         return messages;
     }
 
-    public String getHeader(){
+    public String getHeader() {
         return header;
     }
 
-    public Connection getDbConnection(){
+    public Connection getDbConnection() {
         return connection;
     }
 
