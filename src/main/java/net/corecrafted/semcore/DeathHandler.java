@@ -92,7 +92,11 @@ public class DeathHandler implements Listener {
                 }
                 statement.execute();
 
+                // it is not a new player
             } else {
+                if (res.getInt(2)<=0){
+                    plugin.sendPlayerToServer(p,"hub");
+                }
                 statement = plugin.getDbConnection().prepareStatement("UPDATE player_lifes SET max_life=? WHERE uuid=?");
                 Set<String> ranks = plugin.getConfig().getConfigurationSection("max_life").getKeys(false);
                 if (ranks.contains(user.getPrimaryGroup())) {
