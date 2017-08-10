@@ -3,7 +3,7 @@ main: net.corecrafted.semcore.AppLaunch
 version: 1.2-BETA
 descripton: Core Implementation of Survival Expert Mode Server
 author: ThisTNTSquid
-depend: [PlaceholderAPI]
+depend: [PlaceholderAPI, LuckPerms]
 commands:
   sem:
     description: SEM Core main command

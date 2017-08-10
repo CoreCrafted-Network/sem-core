@@ -38,6 +38,8 @@ max_life:
   obsidian: 9
   bedrock: 10
   nova: 10
+  # Max life of staffs
+  staff: 8
 
 # Counting in minutes
 life-regen-interval: 120

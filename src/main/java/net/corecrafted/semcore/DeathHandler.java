@@ -1,6 +1,9 @@
 package net.corecrafted.semcore;
 
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.lucko.luckperms.LuckPerms;
+import me.lucko.luckperms.api.LuckPermsApi;
+import me.lucko.luckperms.api.User;
 import net.corecrafted.semcore.utils.ColorParser;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -66,22 +69,42 @@ public class DeathHandler implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
+        User user = plugin.getLuckPermsApi().getUser(p.getUniqueId());
         try {
+            //check if it is new player
             PreparedStatement statement = plugin.getDbConnection().prepareStatement("SELECT * FROM player_lifes WHERE uuid=?");
             statement.setString(1, e.getPlayer().getUniqueId().toString());
             ResultSet res = statement.executeQuery();
+            // if is new player (no record)
             if (!res.next()) {
+
                 statement = plugin.getDbConnection().prepareStatement("INSERT INTO player_lifes (uuid, current_life, max_life) VALUES (?,?,?)");
                 statement.setString(1, p.getUniqueId().toString());
                 statement.setInt(2, plugin.getConfig().getInt("initial_life"));
-                statement.setInt(3,plugin.getConfig().getInt(""));
+                Integer max_life = plugin.getConfig().getInt(user.getPrimaryGroup());
+                if (max_life != null) {
+                    statement.setInt(3, max_life);
+                } else {
+                    statement.setInt(3, plugin.getConfig().getInt("staff"));
+                }
+                statement.execute();
+
+            } else {
+                statement = plugin.getDbConnection().prepareStatement("UPDATE player_lifes SET max_life=? WHERE uuid=?");
+                Integer max_life = plugin.getConfig().getInt(user.getPrimaryGroup());
+                if (max_life != null) {
+                    statement.setInt(1, max_life);
+                } else {
+                    statement.setInt(1, plugin.getConfig().getInt("staff"));
+                }
+                statement.setString(2, p.getUniqueId().toString());
             }
         } catch (SQLException e1) {
             e1.printStackTrace();
         }
 
-        SEMUser user = new SEMUser(e.getPlayer(), plugin);
-        if (user.isOutOfLife()) {
+        SEMUser u = new SEMUser(e.getPlayer(), plugin);
+        if (u.isOutOfLife()) {
             plugin.sendPlayerToServer(e.getPlayer(), "hub");
         }
 
