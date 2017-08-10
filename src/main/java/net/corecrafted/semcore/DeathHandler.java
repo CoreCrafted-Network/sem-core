@@ -18,6 +18,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 public class DeathHandler implements Listener {
     private AppLaunch plugin;
@@ -31,8 +32,6 @@ public class DeathHandler implements Listener {
         Player p = e.getEntity();
         if (!(p.getKiller() instanceof Player)) {
             // Handle Non-player kills (zombie, creepers, fall etc)
-            List<String> deathMsg = (List<String>) plugin.getMessages().getList("normal-death");
-            deathMsg.forEach(msg -> p.sendMessage(ColorParser.parse(PlaceholderAPI.setPlaceholders(p, msg))));
 
             // Add a death record
             PreparedStatement stmt = plugin.getDbConnection().prepareStatement("INSERT INTO sem_core.player_death_rec(uuid, cause, loc_world, loc_x, loc_y, loc_z, datetime) VALUES (?,?,?,?,?,?,?)");
@@ -46,9 +45,13 @@ public class DeathHandler implements Listener {
             stmt.execute();
 
             // Take one life away from that player
-            stmt = plugin.getDbConnection().prepareStatement("UPDATE player_lifes SET current_life=(current_life-1) WHERE uuid=?");
-            stmt.setString(1, p.getUniqueId().toString());
+            stmt = plugin.getDbConnection().prepareStatement("UPDATE player_lifes SET current_life=current_life-1 WHERE uuid=?");
+            stmt.setString(1, p.getUniqueId().toString().replaceAll("-",""));
             stmt.execute();
+
+            // Display message to the player
+            List<String> deathMsg = (List<String>) plugin.getMessages().getList("normal-death");
+            deathMsg.forEach(msg -> p.sendMessage(ColorParser.parse(PlaceholderAPI.setPlaceholders(p, msg))));
 
             //check if the player is out of life
             SEMUser user = new SEMUser(p, plugin);
@@ -73,31 +76,32 @@ public class DeathHandler implements Listener {
         try {
             //check if it is new player
             PreparedStatement statement = plugin.getDbConnection().prepareStatement("SELECT * FROM player_lifes WHERE uuid=?");
-            statement.setString(1, e.getPlayer().getUniqueId().toString());
+            statement.setString(1, e.getPlayer().getUniqueId().toString().replaceAll("-",""));
             ResultSet res = statement.executeQuery();
             // if is new player (no record)
             if (!res.next()) {
 
                 statement = plugin.getDbConnection().prepareStatement("INSERT INTO player_lifes (uuid, current_life, max_life) VALUES (?,?,?)");
-                statement.setString(1, p.getUniqueId().toString());
+                statement.setString(1, p.getUniqueId().toString().replaceAll("-",""));
                 statement.setInt(2, plugin.getConfig().getInt("initial_life"));
-                Integer max_life = plugin.getConfig().getInt(user.getPrimaryGroup());
-                if (max_life != null) {
-                    statement.setInt(3, max_life);
+                Set<String> ranks = plugin.getConfig().getConfigurationSection("max_life").getKeys(false);
+                if (ranks.contains(user.getPrimaryGroup())) {
+                    statement.setInt(3, plugin.getConfig().getInt("max_life."+user.getPrimaryGroup()));
                 } else {
-                    statement.setInt(3, plugin.getConfig().getInt("staff"));
+                    statement.setInt(3, plugin.getConfig().getInt("max_life.staff"));
                 }
                 statement.execute();
 
             } else {
                 statement = plugin.getDbConnection().prepareStatement("UPDATE player_lifes SET max_life=? WHERE uuid=?");
-                Integer max_life = plugin.getConfig().getInt(user.getPrimaryGroup());
-                if (max_life != null) {
-                    statement.setInt(1, max_life);
+                Set<String> ranks = plugin.getConfig().getConfigurationSection("max_life").getKeys(false);
+                if (ranks.contains(user.getPrimaryGroup())) {
+                    statement.setInt(1, plugin.getConfig().getInt("max_life."+user.getPrimaryGroup()));
                 } else {
-                    statement.setInt(1, plugin.getConfig().getInt("staff"));
+                    statement.setInt(1, plugin.getConfig().getInt("max_life.staff"));
                 }
-                statement.setString(2, p.getUniqueId().toString());
+                statement.setString(2, p.getUniqueId().toString().replaceAll("-",""));
+                statement.execute();
             }
         } catch (SQLException e1) {
             e1.printStackTrace();

@@ -15,34 +15,36 @@ public class SEMUser {
         this.plugin = plugin;
     }
 
-    public String getLife() {
+    public int getLife() {
         try {
             PreparedStatement statement = plugin.getDbConnection().prepareStatement("SELECT current_life FROM player_lifes WHERE uuid=?");
-            statement.setString(1, player.getUniqueId().toString());
+            statement.setString(1, player.getUniqueId().toString().replaceAll("-",""));
             ResultSet res = statement.executeQuery();
-            return res.getString("current_life");
+            res.next();
+            return res.getInt(1);
         } catch (SQLException e) {
             e.printStackTrace();
-            return "error";
+            return -1;
         }
 
     }
 
-    public String getMax_life() {
+    public int getMax_life() {
         try {
             PreparedStatement statement = plugin.getDbConnection().prepareStatement("SELECT max_life FROM player_lifes WHERE uuid=?");
-            statement.setString(1, player.getUniqueId().toString());
+            statement.setString(1, player.getUniqueId().toString().replaceAll("-",""));
             ResultSet res = statement.executeQuery();
-            return res.getString("max_life");
+            res.next();
+            return res.getInt(1);
         } catch (SQLException e) {
             e.printStackTrace();
-            return "error";
+            return -1;
         }
 
     }
 
     public boolean isOutOfLife(){
-        int life = Integer.parseInt(getLife());
+        int life = getLife();
         return (life<=0);
     }
 

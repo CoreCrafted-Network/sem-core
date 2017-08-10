@@ -18,9 +18,9 @@ public class Placeholders extends EZPlaceholderHook {
         }
         switch (s) {
             case "current_life":
-                return new SEMUser(p, plugin).getLife();
+                return  String.valueOf(new SEMUser(p, plugin).getLife());
             case "max_life":
-                return new SEMUser(p, plugin).getMax_life();
+                return String.valueOf(new SEMUser(p, plugin).getMax_life());
             case "header":
                 return plugin.getHeader();
             default:

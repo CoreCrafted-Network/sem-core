@@ -144,7 +144,7 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
     private void hookPlaceholderAPI() {
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new Placeholders(this).hook();
-            console.sendMessage(ColorParser.parse(header + " &8- Successfully hooked into PlaceholderAPI"));
+            console.sendMessage(ColorParser.parse(header + " &8- Successfully hooked into LuckPerms"));
         } else {
             console.sendMessage(ColorParser.parse(header + " &c- PlceholderAPI not found, please make sure you have installed it"));
         }
