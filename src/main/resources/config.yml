@@ -17,5 +17,27 @@ database:
 
 
 # +-------------------------+
-# |
+# |  Life Configuration    |
+# +-------------------------+`
+initial_life: 3
 
+# Max life refer to the max amount of life can be regen
+max_life:
+  default: 5
+  wood: 6
+  cobble: 6
+  stone: 6
+  coal: 7
+  iron: 7
+  lapis: 7
+  redstone: 8
+  gold: 8
+  quartz: 8
+  diamond: 9
+  emerald: 9
+  obsidian: 9
+  bedrock: 10
+  nova: 10
+
+# Counting in minutes
+life-regen-interval: 120

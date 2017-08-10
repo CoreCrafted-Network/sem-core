@@ -1,20 +1,22 @@
 #=====[General Messages]==========
-# Available placeholders:
-#%header% - header of for the plugin messages
+# All placeholders from PlaceholderAPI is accepted, the following is placeholders provided by this plugin:
+
+# %semcore_header% - header of for the plugin messages
+# %semcore_current_life% - Current amount of life left
+# %semcore_max_life% - Current maximum amount of life
 
 header: '&7[&2SEM Core&7]'
-no-permission: '%header% &cYou are not supposed to change the dimension behavior!'
-no-db-connection: '%header% &cUnable to connect to database server, please contact administrators as soon as possible'
+no-permission: '%semcore_header% &cYou are not supposed to change the dimension behavior!'
+no-db-connection: '%semcore_header% &cUnable to connect to database server, please contact administrators as soon as possible'
 
 
 # =======[Death Handling Messages]=============
 # Available placeholders:
-# %current_life% - Current amount of life left
-# %max_life% - Current maximum amount of life
+
 
 normal-death:
-  - '%header% &cYou just died while surviving this harsh world, 1 life is detected from you'
-  - '%header% &aYou currently have &a%current_life% out of %max_life% lifes left'
+  - '%semcore_header% &cYou just died while surviving this harsh world, 1 life is detected from you'
+  - '%semcore_header% &aYou currently have &a%semcore_current_life% out of %semcore_max_life% lifes left'
 player-kill-death:
-  - '%header% &6You just killed by a player and this death will NOT deduct your life'
-  - '%header% &6Better luck next time :)'
+  - '%semcore_header% &6You just killed by a player and this death will NOT deduct your life'
+  - '%semcore_header% &6Better luck next time :)'

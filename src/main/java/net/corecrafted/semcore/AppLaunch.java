@@ -1,12 +1,20 @@
 package net.corecrafted.semcore;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
+import me.lucko.luckperms.LuckPerms;
+import me.lucko.luckperms.api.LuckPermsApi;
 import net.corecrafted.semcore.utils.ColorParser;
+import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,14 +23,16 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Optional;
 
 
-public class AppLaunch extends JavaPlugin {
+public class AppLaunch extends JavaPlugin implements PluginMessageListener {
     private PluginDescriptionFile pdf = getDescription();
     private ConsoleCommandSender console = getServer().getConsoleSender();
     private File configf, messagesf;
     private FileConfiguration config, messages;
     private Connection connection;
+    private LuckPermsApi luckPermsApi;
 
     private String header = "&7[&2SEM Core&7]";
 
@@ -42,9 +52,19 @@ public class AppLaunch extends JavaPlugin {
         console.sendMessage(ColorParser.parse(header + " &7>> Registering commands and events...."));
         getCommand("sem").setExecutor(new CommandHandler(this));
         getServer().getPluginManager().registerEvents(new DeathHandler(this), this);
+        console.sendMessage(ColorParser.parse(header + " &7>> Hooking into PlaceholderAPI....."));
+        hookPlaceholderAPI();
+        console.sendMessage(ColorParser.parse(header + " &7>> Hooking into LuckPerms"));
+        hookLuckPermsAPI();
+        console.sendMessage(ColorParser.parse(header + " &7>> Setting up plugin messaging channel..."));
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+        getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", this);
         console.sendMessage(ColorParser.parse(header + " &7>> Initialization completed"));
 
         console.sendMessage(ColorParser.parse(header + " &aWelcome back to the reality"));
+        console.sendMessage(ColorParser.parse(header + " --6 -= // /-"));
+        console.sendMessage(ColorParser.parse(header + " - =    -  4"));
+        console.sendMessage(ColorParser.parse(header + " ]= :  .1 98 |:,? 9"));
     }
 
 
@@ -99,13 +119,15 @@ public class AppLaunch extends JavaPlugin {
         } catch (SQLException e) {
             console.sendMessage(ColorParser.parse(header + " &c>> Unable to connect to database, printing stacktrace..."));
             e.printStackTrace();
+            console.sendMessage(ColorParser.parse(header + " &c>> Disabling plugin to prevent further damage"));
+            getServer().getPluginManager().disablePlugin(this);
         }
     }
 
     private void checkTablesExist() {
         try {
-            String sqlscript = "create table IF NOT EXISTS player_death_rec( id int auto_increment primary key, uuid varchar(32) null, cause varchar(100) null, loc_world varchar(45) null, loc_x double null, loc_y double null, loc_z double null, datetime bigint(10) null) ;";
-            String sqlscript2 = " create table IF NOT EXISTS player_lifes( uuid varchar(32) not null primary key, current_life int null, max_life int null ) ;";
+            String sqlscript = "CREATE TABLE IF NOT EXISTS player_death_rec( id INT AUTO_INCREMENT PRIMARY KEY, uuid VARCHAR(32) NULL, cause VARCHAR(100) NULL, loc_world VARCHAR(45) NULL, loc_x DOUBLE NULL, loc_y DOUBLE NULL, loc_z DOUBLE NULL, datetime BIGINT(10) NULL) ;";
+            String sqlscript2 = " CREATE TABLE IF NOT EXISTS player_lifes( uuid VARCHAR(32) NOT NULL PRIMARY KEY, current_life INT NULL, max_life INT NULL ) ;";
 //            System.out.println(sqlscript);
 //            System.out.println(sqlscript2);
             PreparedStatement stmt = connection.prepareStatement(sqlscript);
@@ -117,6 +139,15 @@ public class AppLaunch extends JavaPlugin {
             e.printStackTrace();
         }
 
+    }
+
+    private void hookPlaceholderAPI() {
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            new Placeholders(this).hook();
+            console.sendMessage(ColorParser.parse(header + " &8- Successfully hooked into PlaceholderAPI"));
+        } else {
+            console.sendMessage(ColorParser.parse(header + " &c- PlceholderAPI not found, please make sure you have installed it"));
+        }
     }
 
     private Map getDbConnInfo() {
@@ -138,5 +169,33 @@ public class AppLaunch extends JavaPlugin {
 
     public ConsoleCommandSender getConsole() {
         return console;
+    }
+
+    public void sendPlayerToServer(Player p,String server) {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("Connect");
+        out.writeUTF(server);
+        p.sendPluginMessage(this, "BungeeCord", out.toByteArray());
+    }
+
+    private void hookLuckPermsAPI(){
+        Optional<LuckPermsApi> provider = LuckPerms.getApiSafe();
+        if (provider.isPresent()) {
+            luckPermsApi = provider.get();
+            console.sendMessage(ColorParser.parse(header + " &8- Successfully hooked into PlaceholderAPI"));
+        } else {
+            console.sendMessage(ColorParser.parse(header + " &c- LuckPerms not found, disabling plugin..."));
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+    }
+
+    public LuckPermsApi getLuckPermsApi() {
+        return luckPermsApi;
+    }
+
+    @Override
+    public void onPluginMessageReceived(String channel, Player player, byte[] bytes) {
+
     }
 }

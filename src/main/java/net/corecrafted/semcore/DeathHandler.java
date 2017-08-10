@@ -1,15 +1,18 @@
 package net.corecrafted.semcore;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.corecrafted.semcore.utils.ColorParser;
-import net.corecrafted.semcore.utils.PlaceholderReplacer;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
+import java.awt.geom.RectangularShape;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -26,7 +29,9 @@ public class DeathHandler implements Listener {
         if (!(p.getKiller() instanceof Player)) {
             // Handle Non-player kills (zombie, creepers, fall etc)
             List<String> deathMsg = (List<String>) plugin.getMessages().getList("normal-death");
-            deathMsg.forEach(msg -> p.sendMessage(ColorParser.parse(PlaceholderReplacer.parse(msg,plugin))));
+            deathMsg.forEach(msg -> p.sendMessage(ColorParser.parse(PlaceholderAPI.setPlaceholders(p, msg))));
+
+            // Add a death record
             PreparedStatement stmt = plugin.getDbConnection().prepareStatement("INSERT INTO sem_core.player_death_rec(uuid, cause, loc_world, loc_x, loc_y, loc_z, datetime) VALUES (?,?,?,?,?,?,?)");
             stmt.setString(1, p.getUniqueId().toString().replaceAll("-", ""));
             stmt.setString(2, e.getDeathMessage());
@@ -37,18 +42,48 @@ public class DeathHandler implements Listener {
             stmt.setLong(7, System.currentTimeMillis() / 1000);
             stmt.execute();
 
+            // Take one life away from that player
+            stmt = plugin.getDbConnection().prepareStatement("UPDATE player_lifes SET current_life=(current_life-1) WHERE uuid=?");
+            stmt.setString(1, p.getUniqueId().toString());
+            stmt.execute();
+
+            //check if the player is out of life
+            SEMUser user = new SEMUser(p, plugin);
+            if (user.isOutOfLife()) {
+                plugin.sendPlayerToServer(p, "hub");
+            }
+
         } else {
             // Handle Player kills , which does not count
             List<String> deathMsg = (List<String>) plugin.getMessages().getList("player-kill-death");
             p.spigot().respawn();
-            deathMsg.forEach(msg -> p.sendMessage(ColorParser.parse(PlaceholderReplacer.parse(msg,plugin))));
+            p.spigot().respawn();
+            deathMsg.forEach(msg -> p.sendMessage(ColorParser.parse(PlaceholderAPI.setPlaceholders(p, msg))));
             return;
         }
     }
 
     @EventHandler
-    public void onPlayerRespawn(PlayerRespawnEvent e) {
+    public void onJoin(PlayerJoinEvent e) {
+        Player p = e.getPlayer();
+        try {
+            PreparedStatement statement = plugin.getDbConnection().prepareStatement("SELECT * FROM player_lifes WHERE uuid=?");
+            statement.setString(1, e.getPlayer().getUniqueId().toString());
+            ResultSet res = statement.executeQuery();
+            if (!res.next()) {
+                statement = plugin.getDbConnection().prepareStatement("INSERT INTO player_lifes (uuid, current_life, max_life) VALUES (?,?,?)");
+                statement.setString(1, p.getUniqueId().toString());
+                statement.setInt(2, plugin.getConfig().getInt("initial_life"));
+                statement.setInt(3,plugin.getConfig().getInt(""));
+            }
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+        }
 
+        SEMUser user = new SEMUser(e.getPlayer(), plugin);
+        if (user.isOutOfLife()) {
+            plugin.sendPlayerToServer(e.getPlayer(), "hub");
+        }
 
     }
 }
