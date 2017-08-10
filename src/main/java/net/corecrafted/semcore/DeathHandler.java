@@ -73,6 +73,10 @@ public class DeathHandler implements Listener {
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
         User user = plugin.getLuckPermsApi().getUser(p.getUniqueId());
+        SEMUser u = new SEMUser(p,plugin);
+        if (u.getLife()<=0){
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,()->plugin.sendPlayerToServer(p,"hub"),2);
+        }
         try {
             //check if it is new player
             PreparedStatement statement = plugin.getDbConnection().prepareStatement("SELECT * FROM player_lifes WHERE uuid=?");
@@ -94,9 +98,6 @@ public class DeathHandler implements Listener {
 
                 // it is not a new player
             } else {
-                if (res.getInt(2)<=0){
-                    plugin.sendPlayerToServer(p,"hub");
-                }
                 statement = plugin.getDbConnection().prepareStatement("UPDATE player_lifes SET max_life=? WHERE uuid=?");
                 Set<String> ranks = plugin.getConfig().getConfigurationSection("max_life").getKeys(false);
                 if (ranks.contains(user.getPrimaryGroup())) {
@@ -110,11 +111,17 @@ public class DeathHandler implements Listener {
         } catch (SQLException e1) {
             e1.printStackTrace();
         }
-
-        SEMUser u = new SEMUser(e.getPlayer(), plugin);
         if (u.isOutOfLife()) {
             plugin.sendPlayerToServer(e.getPlayer(), "hub");
         }
+
+    }
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent e){
+        SEMUser user = new SEMUser(e.getPlayer(),plugin);
+            if (user.getLife()<=0){
+                plugin.sendPlayerToServer(e.getPlayer(),"hub");
+            }
 
     }
 }
