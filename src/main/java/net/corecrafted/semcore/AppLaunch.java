@@ -29,8 +29,8 @@ import java.util.Optional;
 public class AppLaunch extends JavaPlugin implements PluginMessageListener {
     private PluginDescriptionFile pdf = getDescription();
     private ConsoleCommandSender console = getServer().getConsoleSender();
-    private File configf, messagesf;
-    private FileConfiguration config, messages;
+    private File configf, messagesf, regeneratingf;
+    private FileConfiguration config, messages, regenerating;
     private Connection connection;
     private LuckPermsApi luckPermsApi;
 
@@ -71,6 +71,7 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
     void loadFiles() {
         configf = new File(getDataFolder(), "config.yml");
         messagesf = new File(getDataFolder(), "messages.yml");
+        regeneratingf = new File(getDataFolder(), "regenerating.yml");
 
         if (!configf.exists()) {
             console.sendMessage(ColorParser.parse(header + " &8- Creating missing config.yml....."));
@@ -82,8 +83,14 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
             messagesf.getParentFile().mkdir();
             saveResource("messages.yml", false);
         }
+        if (!regeneratingf.exists()) {
+            console.sendMessage(ColorParser.parse(header + " &8- Creating missing messages.yml...."));
+            regeneratingf.getParentFile().mkdir();
+            saveResource("regenerating.yml", false);
+        }
         config = new YamlConfiguration();
         messages = new YamlConfiguration();
+        regenerating = new YamlConfiguration();
 
         try {
             config.load(configf);
@@ -107,8 +114,30 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
             e.printStackTrace();
         }
 
+
         console.sendMessage(ColorParser.parse(header + " &7>> Files loading finished :)"));
         header = messages.getString("header");
+    }
+
+    private void loadMultipleFiles(String filename,FileConfiguration config) {
+        File file = new File(getDataFolder(), filename);
+        if (!file.exists()){
+            console.sendMessage(ColorParser.parse(header + " &8- Creating missing "+filename+"....."));
+            file.getParentFile().mkdir();
+            saveResource(filename, false);
+        }
+        config=new YamlConfiguration();
+        try {
+            config.load(file);
+            console.sendMessage(ColorParser.parse(header + " &8- Config loaded"));
+        } catch (IOException e) {
+            console.sendMessage(ColorParser.parse(header + " &c>> Unable to access config.yml , printing stacktrace..."));
+            e.printStackTrace();
+        } catch (InvalidConfigurationException e) {
+            console.sendMessage(ColorParser.parse(header + " &c>> config.yml is not valid, printing stacktrace..."));
+            e.printStackTrace();
+        }
+
     }
 
     private void testDbConn() {
@@ -171,14 +200,14 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
         return console;
     }
 
-    public void sendPlayerToServer(Player p,String server) {
+    public void sendPlayerToServer(Player p, String server) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("Connect");
         out.writeUTF(server);
         p.sendPluginMessage(this, "BungeeCord", out.toByteArray());
     }
 
-    private void hookLuckPermsAPI(){
+    private void hookLuckPermsAPI() {
         Optional<LuckPermsApi> provider = LuckPerms.getApiSafe();
         if (provider.isPresent()) {
             luckPermsApi = provider.get();
@@ -198,4 +227,6 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
     public void onPluginMessageReceived(String channel, Player player, byte[] bytes) {
 
     }
+
+
 }

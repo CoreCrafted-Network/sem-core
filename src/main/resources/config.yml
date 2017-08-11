@@ -23,20 +23,40 @@ initial_life: 3
 
 # Max life refer to the max amount of life can be regen
 max_life:
+  default: 8
+  wood: 8
+  cobble: 8
+  stone: 8
+  coal: 9
+  iron: 9
+  lapis: 9
+  redstone: 10
+  gold: 10
+  quartz: 10
+  diamond: 10
+  emerald: 11
+  obsidian: 11
+  bedrock: 12
+  nova: 13
+  # Max life of staffs
+  staff: 10
+
+# Max life refer to the max amount of life can be regen
+regen_life:
   default: 5
   wood: 6
   cobble: 6
   stone: 6
-  coal: 7
-  iron: 7
+  coal: 6
+  iron: 6
   lapis: 7
-  redstone: 8
-  gold: 8
-  quartz: 8
-  diamond: 9
-  emerald: 9
-  obsidian: 9
-  bedrock: 10
+  redstone: 7
+  gold: 7
+  quartz: 7
+  diamond: 8
+  emerald: 8
+  obsidian: 8
+  bedrock: 9
   nova: 10
   # Max life of staffs
   staff: 8
