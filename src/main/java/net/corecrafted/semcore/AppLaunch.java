@@ -29,7 +29,6 @@ import java.util.Optional;
 public class AppLaunch extends JavaPlugin implements PluginMessageListener {
     private PluginDescriptionFile pdf = getDescription();
     private ConsoleCommandSender console = getServer().getConsoleSender();
-    private File configf, messagesf, regeneratingf;
     private FileConfiguration config, messages, regenerating;
     private Connection connection;
     private LuckPermsApi luckPermsApi;
@@ -69,51 +68,10 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
 
 
     void loadFiles() {
-        configf = new File(getDataFolder(), "config.yml");
-        messagesf = new File(getDataFolder(), "messages.yml");
-        regeneratingf = new File(getDataFolder(), "regenerating.yml");
 
-        if (!configf.exists()) {
-            console.sendMessage(ColorParser.parse(header + " &8- Creating missing config.yml....."));
-            configf.getParentFile().mkdir();
-            saveResource("config.yml", false);
-        }
-        if (!messagesf.exists()) {
-            console.sendMessage(ColorParser.parse(header + " &8- Creating missing messages.yml...."));
-            messagesf.getParentFile().mkdir();
-            saveResource("messages.yml", false);
-        }
-        if (!regeneratingf.exists()) {
-            console.sendMessage(ColorParser.parse(header + " &8- Creating missing messages.yml...."));
-            regeneratingf.getParentFile().mkdir();
-            saveResource("regenerating.yml", false);
-        }
-        config = new YamlConfiguration();
-        messages = new YamlConfiguration();
-        regenerating = new YamlConfiguration();
-
-        try {
-            config.load(configf);
-            console.sendMessage(ColorParser.parse(header + " &8- Config loaded"));
-        } catch (IOException e) {
-            console.sendMessage(ColorParser.parse(header + " &c>> Unable to access config.yml , printing stacktrace..."));
-            e.printStackTrace();
-        } catch (InvalidConfigurationException e) {
-            console.sendMessage(ColorParser.parse(header + " &c>> config.yml is not valid, printing stacktrace..."));
-            e.printStackTrace();
-        }
-        try {
-            messages.load(messagesf);
-            console.sendMessage(ColorParser.parse(header + " &8- Messages file loaded"));
-            header = messages.getString("header");
-        } catch (IOException e) {
-            console.sendMessage(ColorParser.parse(header + " &c>> Unable to access messages.yml , printing stacktrace..."));
-            e.printStackTrace();
-        } catch (InvalidConfigurationException e) {
-            console.sendMessage(ColorParser.parse(header + " &c>> messages.yml is invalid, printing stacktrace..."));
-            e.printStackTrace();
-        }
-
+        loadMultipleFiles("config.yml",config);
+        loadMultipleFiles("messages.yml",messages);
+        loadMultipleFiles("regenerating.yml",regenerating);
 
         console.sendMessage(ColorParser.parse(header + " &7>> Files loading finished :)"));
         header = messages.getString("header");
@@ -131,10 +89,10 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
             config.load(file);
             console.sendMessage(ColorParser.parse(header + " &8- Config loaded"));
         } catch (IOException e) {
-            console.sendMessage(ColorParser.parse(header + " &c>> Unable to access config.yml , printing stacktrace..."));
+            console.sendMessage(ColorParser.parse(header + " &c>> Unable to access+"+filename+", printing stacktrace..."));
             e.printStackTrace();
         } catch (InvalidConfigurationException e) {
-            console.sendMessage(ColorParser.parse(header + " &c>> config.yml is not valid, printing stacktrace..."));
+            console.sendMessage(ColorParser.parse(header + " &c>> "+filename+" is not valid, printing stacktrace..."));
             e.printStackTrace();
         }
 
@@ -221,6 +179,10 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
 
     public LuckPermsApi getLuckPermsApi() {
         return luckPermsApi;
+    }
+
+    public FileConfiguration getRegenerating() {
+        return regenerating;
     }
 
     @Override

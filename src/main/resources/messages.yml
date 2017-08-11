@@ -15,7 +15,7 @@ no-db-connection: '%semcore_header% &cUnable to connect to database server, plea
 
 
 normal-death:
-  - '%semcore_header% &cYou just died while surviving this harsh world, 1 life is detected from you'
+  - '%semcore_header% &cYou just died while surviving this harsh world, 1 life has been removed'
   - '%semcore_header% &aYou currently have &a%semcore_current_life% out of %semcore_max_life% lifes left'
 player-kill-death:
   - '%semcore_header% &6You just killed by a player and this death will NOT deduct your life'
