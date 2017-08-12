@@ -5,6 +5,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.HashMap;
+
 public class CommandHandler implements CommandExecutor {
     private AppLaunch plugin;
 
@@ -21,6 +26,22 @@ public class CommandHandler implements CommandExecutor {
         if (args[0].equals("reload")){
             plugin.loadFiles();
             commandSender.sendMessage(ColorParser.parse(plugin.getHeader()+" &aConfig and messages files reloaded"));
+            return true;
+        }
+        if (args[0].equals("debug")){
+            FileInputStream fileIn = null;
+            try {
+                fileIn = new FileInputStream(plugin.getDataFolder()+"\\regen.data");
+                ObjectInputStream in = new ObjectInputStream(fileIn);
+                HashMap map = (HashMap) in.readObject();
+                in.close();
+                fileIn.close();
+                map.forEach((uuid,number)-> System.out.print(uuid.toString()+" | "+number));
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
+
         }
 
 

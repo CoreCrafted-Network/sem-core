@@ -29,9 +29,11 @@ import java.util.Optional;
 public class AppLaunch extends JavaPlugin implements PluginMessageListener {
     private PluginDescriptionFile pdf = getDescription();
     private ConsoleCommandSender console = getServer().getConsoleSender();
-    private FileConfiguration config, messages, regenerating;
+    private FileConfiguration config, messages;
+    private File configf, messagesf;
     private Connection connection;
     private LuckPermsApi luckPermsApi;
+    private LifeGenerator lifeGenerator;
 
     private String header = "&7[&2SEM Core&7]";
 
@@ -58,7 +60,9 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
         console.sendMessage(ColorParser.parse(header + " &7>> Setting up plugin messaging channel..."));
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", this);
-        console.sendMessage(ColorParser.parse(header + " &7>> Initialization completed"));
+        lifeGenerator = new LifeGenerator(this);
+        console.sendMessage(ColorParser.parse(header + " &7>> Loaded player generation set"));
+        console.sendMessage(ColorParser.parse(header + " &2>> Initialization completed"));
 
         console.sendMessage(ColorParser.parse(header + " &aWelcome back to the reality"));
         console.sendMessage(ColorParser.parse(header + " --6 -= // /-"));
@@ -69,34 +73,35 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
 
     void loadFiles() {
 
-        loadMultipleFiles("config.yml",config);
-        loadMultipleFiles("messages.yml",messages);
-        loadMultipleFiles("regenerating.yml",regenerating);
+        if (!(getDataFolder().exists())) {
+            getDataFolder().mkdir();
+        }
+        configf = new File(getDataFolder(), "config.yml");
+        messagesf = new File(getDataFolder(), "messages.yml");
+        if (!configf.exists()) {
+            saveResource("config.yml", false);
+            console.sendMessage(ColorParser.parse(header + " &8- Creating missing config.yml ....."));
+        }
+        if (!messagesf.exists()) {
+            saveResource("messages.yml", false);
+            console.sendMessage(ColorParser.parse(header + " &8- Creating missing messages.yml ....."));
+        }
+        config = new YamlConfiguration();
+        messages = new YamlConfiguration();
+
+        try {
+            config.load(configf);
+            messages.load(messagesf);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
 
         console.sendMessage(ColorParser.parse(header + " &7>> Files loading finished :)"));
         header = messages.getString("header");
     }
 
-    private void loadMultipleFiles(String filename,FileConfiguration config) {
-        File file = new File(getDataFolder(), filename);
-        if (!file.exists()){
-            console.sendMessage(ColorParser.parse(header + " &8- Creating missing "+filename+"....."));
-            file.getParentFile().mkdir();
-            saveResource(filename, false);
-        }
-        config=new YamlConfiguration();
-        try {
-            config.load(file);
-            console.sendMessage(ColorParser.parse(header + " &8- Config loaded"));
-        } catch (IOException e) {
-            console.sendMessage(ColorParser.parse(header + " &c>> Unable to access+"+filename+", printing stacktrace..."));
-            e.printStackTrace();
-        } catch (InvalidConfigurationException e) {
-            console.sendMessage(ColorParser.parse(header + " &c>> "+filename+" is not valid, printing stacktrace..."));
-            e.printStackTrace();
-        }
-
-    }
 
     private void testDbConn() {
         Map map = getDbConnInfo();
@@ -181,14 +186,13 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
         return luckPermsApi;
     }
 
-    public FileConfiguration getRegenerating() {
-        return regenerating;
-    }
 
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] bytes) {
 
     }
 
-
+    public LifeGenerator getLifeGenerator() {
+        return lifeGenerator;
+    }
 }
