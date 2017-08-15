@@ -46,7 +46,7 @@ public class DeathHandler implements Listener {
 
             // Take one life away from that player
             stmt = plugin.getDbConnection().prepareStatement("UPDATE player_lifes SET current_life=current_life-1 WHERE uuid=?");
-            stmt.setString(1, p.getUniqueId().toString().replaceAll("-",""));
+            stmt.setString(1, p.getUniqueId().toString().replaceAll("-", ""));
             stmt.execute();
 
             // Display message to the player
@@ -73,24 +73,22 @@ public class DeathHandler implements Listener {
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
         User user = plugin.getLuckPermsApi().getUser(p.getUniqueId());
-        SEMUser u = new SEMUser(p,plugin);
-        if (u.getLife()<=0){
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,()->plugin.sendPlayerToServer(p,"hub"),2);
-        }
+        SEMUser u = new SEMUser(p, plugin);
+
         try {
             //check if it is new player
             PreparedStatement statement = plugin.getDbConnection().prepareStatement("SELECT * FROM player_lifes WHERE uuid=?");
-            statement.setString(1, e.getPlayer().getUniqueId().toString().replaceAll("-",""));
+            statement.setString(1, e.getPlayer().getUniqueId().toString().replaceAll("-", ""));
             ResultSet res = statement.executeQuery();
             // if is new player (no record)
             if (!res.next()) {
 
                 statement = plugin.getDbConnection().prepareStatement("INSERT INTO player_lifes (uuid, current_life, max_life) VALUES (?,?,?)");
-                statement.setString(1, p.getUniqueId().toString().replaceAll("-",""));
+                statement.setString(1, p.getUniqueId().toString().replaceAll("-", ""));
                 statement.setInt(2, plugin.getConfig().getInt("initial_life"));
                 Set<String> ranks = plugin.getConfig().getConfigurationSection("max_life").getKeys(false);
                 if (ranks.contains(user.getPrimaryGroup())) {
-                    statement.setInt(3, plugin.getConfig().getInt("max_life."+user.getPrimaryGroup()));
+                    statement.setInt(3, plugin.getConfig().getInt("max_life." + user.getPrimaryGroup()));
                 } else {
                     statement.setInt(3, plugin.getConfig().getInt("max_life.staff"));
                 }
@@ -98,14 +96,17 @@ public class DeathHandler implements Listener {
 
                 // it is not a new player
             } else {
+                if (u.getLife() <= 0) {
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> plugin.sendPlayerToServer(p, "hub"), 2);
+                }
                 statement = plugin.getDbConnection().prepareStatement("UPDATE player_lifes SET max_life=? WHERE uuid=?");
                 Set<String> ranks = plugin.getConfig().getConfigurationSection("max_life").getKeys(false);
                 if (ranks.contains(user.getPrimaryGroup())) {
-                    statement.setInt(1, plugin.getConfig().getInt("max_life."+user.getPrimaryGroup()));
+                    statement.setInt(1, plugin.getConfig().getInt("max_life." + user.getPrimaryGroup()));
                 } else {
                     statement.setInt(1, plugin.getConfig().getInt("max_life.staff"));
                 }
-                statement.setString(2, p.getUniqueId().toString().replaceAll("-",""));
+                statement.setString(2, p.getUniqueId().toString().replaceAll("-", ""));
                 statement.execute();
             }
         } catch (SQLException e1) {
@@ -116,12 +117,13 @@ public class DeathHandler implements Listener {
         }
 
     }
+
     @EventHandler
-    public void onRespawn(PlayerRespawnEvent e){
-        SEMUser user = new SEMUser(e.getPlayer(),plugin);
-            if (user.getLife()<=0){
-                plugin.sendPlayerToServer(e.getPlayer(),"hub");
-            }
+    public void onRespawn(PlayerRespawnEvent e) {
+        SEMUser user = new SEMUser(e.getPlayer(), plugin);
+        if (user.getLife() <= 0) {
+            plugin.sendPlayerToServer(e.getPlayer(), "hub");
+        }
 
     }
 }
