@@ -23,7 +23,7 @@ public class SEMUser {
             res.next();
             return res.getInt(1);
         } catch (SQLException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             return -1;
         }
 
@@ -37,7 +37,7 @@ public class SEMUser {
             res.next();
             return res.getInt(1);
         } catch (SQLException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             return -1;
         }
 

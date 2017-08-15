@@ -74,7 +74,6 @@ public class DeathHandler implements Listener {
         Player p = e.getPlayer();
         User user = plugin.getLuckPermsApi().getUser(p.getUniqueId());
         SEMUser u = new SEMUser(p, plugin);
-
         try {
             //check if it is new player
             PreparedStatement statement = plugin.getDbConnection().prepareStatement("SELECT * FROM player_lifes WHERE uuid=?");
