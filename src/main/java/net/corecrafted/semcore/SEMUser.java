@@ -2,9 +2,8 @@ package net.corecrafted.semcore;
 
 import org.bukkit.entity.Player;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.Map;
 
 public class SEMUser {
     private Player player;
@@ -17,10 +16,13 @@ public class SEMUser {
 
     public int getLife() {
         try {
-            PreparedStatement statement = plugin.getDbConnection().prepareStatement("SELECT current_life FROM player_lifes WHERE uuid=?");
+            Map map = plugin.getDbConnInfo();
+            Connection connection = DriverManager.getConnection("jdbc:" + (String) map.get("host") + "/" + (String) map.get("schema"), (String) map.get("username"), (String) map.get("password"));
+
+            PreparedStatement statement = connection.prepareStatement("SELECT current_life FROM player_lifes WHERE uuid=?");
             statement.setString(1, player.getUniqueId().toString().replaceAll("-",""));
             ResultSet res = statement.executeQuery();
-            plugin.getDbConnection().close();
+            connection.close();
             res.next();
             return res.getInt(1);
         } catch (SQLException e) {
@@ -32,10 +34,12 @@ public class SEMUser {
 
     public int getMax_life() {
         try {
-            PreparedStatement statement = plugin.getDbConnection().prepareStatement("SELECT max_life FROM player_lifes WHERE uuid=?");
+            Map map = plugin.getDbConnInfo();
+            Connection connection = DriverManager.getConnection("jdbc:" + (String) map.get("host") + "/" + (String) map.get("schema"), (String) map.get("username"), (String) map.get("password"));
+            PreparedStatement statement = connection.prepareStatement("SELECT max_life FROM player_lifes WHERE uuid=?");
             statement.setString(1, player.getUniqueId().toString().replaceAll("-",""));
             ResultSet res = statement.executeQuery();
-            plugin.getDbConnection().close();
+            connection.close();
             res.next();
             return res.getInt(1);
         } catch (SQLException e) {

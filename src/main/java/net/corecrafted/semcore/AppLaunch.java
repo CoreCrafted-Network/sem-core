@@ -142,7 +142,7 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
         }
     }
 
-    private Map getDbConnInfo() {
+    public Map getDbConnInfo() {
         Map map = config.getConfigurationSection("database").getValues(true);
         return map;
     }
@@ -153,10 +153,6 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
 
     public String getHeader() {
         return header;
-    }
-
-    public Connection getDbConnection() {
-        return connection;
     }
 
     public ConsoleCommandSender getConsole() {

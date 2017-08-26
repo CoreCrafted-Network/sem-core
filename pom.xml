@@ -6,7 +6,7 @@
 
     <groupId>net.corecrafted.semcore</groupId>
     <artifactId>SEM-Core</artifactId>
-    <version>1.2.04-BETA</version>
+    <version>1.2.05-BETA</version>
     <build>
         <plugins>
             <plugin>
