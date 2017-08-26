@@ -15,43 +15,56 @@ public class SEMUser {
     }
 
     public int getLife() {
+        Map map = plugin.getDbConnInfo();
+        Connection connection=null;
         try {
-            Map map = plugin.getDbConnInfo();
-            Connection connection = DriverManager.getConnection("jdbc:" + (String) map.get("host") + "/" + (String) map.get("schema"), (String) map.get("username"), (String) map.get("password"));
+
+            connection = DriverManager.getConnection("jdbc:" + (String) map.get("host") + "/" + (String) map.get("schema"), (String) map.get("username"), (String) map.get("password"));
 
             PreparedStatement statement = connection.prepareStatement("SELECT current_life FROM player_lifes WHERE uuid=?");
-            statement.setString(1, player.getUniqueId().toString().replaceAll("-",""));
+            statement.setString(1, player.getUniqueId().toString().replaceAll("-", ""));
             ResultSet res = statement.executeQuery();
-            connection.close();
             res.next();
             return res.getInt(1);
         } catch (SQLException e) {
-//            e.printStackTrace();
+            e.printStackTrace();
             return -1;
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
     }
 
     public int getMax_life() {
+        Map map = plugin.getDbConnInfo();
+        Connection connection=null;
         try {
-            Map map = plugin.getDbConnInfo();
-            Connection connection = DriverManager.getConnection("jdbc:" + (String) map.get("host") + "/" + (String) map.get("schema"), (String) map.get("username"), (String) map.get("password"));
+            connection = DriverManager.getConnection("jdbc:" + (String) map.get("host") + "/" + (String) map.get("schema"), (String) map.get("username"), (String) map.get("password"));
             PreparedStatement statement = connection.prepareStatement("SELECT max_life FROM player_lifes WHERE uuid=?");
-            statement.setString(1, player.getUniqueId().toString().replaceAll("-",""));
+            statement.setString(1, player.getUniqueId().toString().replaceAll("-", ""));
             ResultSet res = statement.executeQuery();
-            connection.close();
             res.next();
             return res.getInt(1);
         } catch (SQLException e) {
-//            e.printStackTrace();
+            e.printStackTrace();
             return -1;
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
     }
 
-    public boolean isOutOfLife(){
+    public boolean isOutOfLife() {
         int life = getLife();
-        return (life<=0);
+        return (life <= 0);
     }
 
 }

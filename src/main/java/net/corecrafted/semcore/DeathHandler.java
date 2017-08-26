@@ -73,9 +73,10 @@ public class DeathHandler implements Listener {
         Player p = e.getPlayer();
         User user = plugin.getLuckPermsApi().getUser(p.getUniqueId());
         SEMUser u = new SEMUser(p, plugin);
+        Connection connection = null;
         try {
             Map map = plugin.getDbConnInfo();
-            Connection connection = DriverManager.getConnection("jdbc:" + (String) map.get("host") + "/" + (String) map.get("schema"), (String) map.get("username"), (String) map.get("password"));
+            connection = DriverManager.getConnection("jdbc:" + (String) map.get("host") + "/" + (String) map.get("schema"), (String) map.get("username"), (String) map.get("password"));
             //check if it is new player
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM player_lifes WHERE uuid=?");
             statement.setString(1, e.getPlayer().getUniqueId().toString().replaceAll("-", ""));
@@ -109,10 +110,16 @@ public class DeathHandler implements Listener {
                 }
                 statement.setString(2, p.getUniqueId().toString().replaceAll("-", ""));
                 statement.execute();
-                connection.close();
+
             }
         } catch (SQLException e1) {
             e1.printStackTrace();
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
         }
         if (u.isOutOfLife()) {
             plugin.sendPlayerToServer(e.getPlayer(), "hub");

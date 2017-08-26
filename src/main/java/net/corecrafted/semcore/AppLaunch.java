@@ -68,6 +68,11 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
         console.sendMessage(ColorParser.parse(header + " --6 -= // /-"));
         console.sendMessage(ColorParser.parse(header + " - =    -  4"));
         console.sendMessage(ColorParser.parse(header + " ]= :  .1 98 |:,? 9"));
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -130,7 +135,6 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
             console.sendMessage(ColorParser.parse(header + " &c>> Check failed since it is unable connect to database"));
             e.printStackTrace();
         }
-
     }
 
     private void hookPlaceholderAPI() {
