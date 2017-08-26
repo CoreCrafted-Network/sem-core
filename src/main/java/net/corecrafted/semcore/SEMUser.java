@@ -20,6 +20,7 @@ public class SEMUser {
             PreparedStatement statement = plugin.getDbConnection().prepareStatement("SELECT current_life FROM player_lifes WHERE uuid=?");
             statement.setString(1, player.getUniqueId().toString().replaceAll("-",""));
             ResultSet res = statement.executeQuery();
+            plugin.getDbConnection().close();
             res.next();
             return res.getInt(1);
         } catch (SQLException e) {
@@ -34,6 +35,7 @@ public class SEMUser {
             PreparedStatement statement = plugin.getDbConnection().prepareStatement("SELECT max_life FROM player_lifes WHERE uuid=?");
             statement.setString(1, player.getUniqueId().toString().replaceAll("-",""));
             ResultSet res = statement.executeQuery();
+            plugin.getDbConnection().close();
             res.next();
             return res.getInt(1);
         } catch (SQLException e) {

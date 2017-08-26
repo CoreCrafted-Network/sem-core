@@ -1,8 +1,6 @@
 package net.corecrafted.semcore;
 
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.lucko.luckperms.LuckPerms;
-import me.lucko.luckperms.api.LuckPermsApi;
 import me.lucko.luckperms.api.User;
 import net.corecrafted.semcore.utils.ColorParser;
 import org.bukkit.Bukkit;
@@ -13,7 +11,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-import java.awt.geom.RectangularShape;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -48,6 +45,7 @@ public class DeathHandler implements Listener {
             stmt = plugin.getDbConnection().prepareStatement("UPDATE player_lifes SET current_life=current_life-1 WHERE uuid=?");
             stmt.setString(1, p.getUniqueId().toString().replaceAll("-", ""));
             stmt.execute();
+            plugin.getDbConnection().close();
 
             // Display message to the player
             List<String> deathMsg = (List<String>) plugin.getMessages().getList("normal-death");
@@ -92,6 +90,7 @@ public class DeathHandler implements Listener {
                     statement.setInt(3, plugin.getConfig().getInt("max_life.staff"));
                 }
                 statement.execute();
+                plugin.getDbConnection().close();
 
                 // it is not a new player
             } else {
@@ -107,6 +106,7 @@ public class DeathHandler implements Listener {
                 }
                 statement.setString(2, p.getUniqueId().toString().replaceAll("-", ""));
                 statement.execute();
+                plugin.getDbConnection().close();
             }
         } catch (SQLException e1) {
             e1.printStackTrace();
@@ -114,7 +114,6 @@ public class DeathHandler implements Listener {
         if (u.isOutOfLife()) {
             plugin.sendPlayerToServer(e.getPlayer(), "hub");
         }
-
     }
 
     @EventHandler

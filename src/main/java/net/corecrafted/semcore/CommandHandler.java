@@ -40,14 +40,34 @@ public class CommandHandler implements CommandExecutor {
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
-
-
         }
+//        if (args[0].equals("player")){
+//            if (args.length==1){
+//                displayPlayerHelp(sen);
+//            }
+//            Player p = Bukkit.getPlayer(args[1]);
+//            if (p==null){
+//                commandSender.sendMessage(ColorParser.parse(plugin.getHeader()+" &cThe player you targeting is not a player"));
+//            }
+//
+//        }
 
 
 
         return true;
     }
+
+//    private void displayPlayerHelp() {
+//        if (sender.hasPermission("sem.control")) {
+//            sender.sendMessage(ColorParser.parse("&8-=-=-=-=-=[ &aSEM Core Help &8]=-=-=-=-=-"));
+//            sender.sendMessage(ColorParser.parse("&a/sem player disable &e- Display this help message"));
+//            sender.sendMessage(ColorParser.parse("&a/sem player &e- Show a list of operations on players"));
+//            sender.sendMessage(ColorParser.parse("&a/sem items &e- This option is not working"));
+//            sender.sendMessage(ColorParser.parse("&a/sem reload &e- Reloads config and messages"));
+//        } else {
+//            sender.sendMessage(ColorParser.parse(plugin.getMessages().getString("no-permission").replaceAll("%header%",plugin.getHeader())));
+//        }
+//    }
 
     private void sendMainHelp(CommandSender sender) {
         if (sender.hasPermission("sem.control")) {
@@ -59,6 +79,7 @@ public class CommandHandler implements CommandExecutor {
         } else {
             sender.sendMessage(ColorParser.parse(plugin.getMessages().getString("no-permission").replaceAll("%header%",plugin.getHeader())));
         }
-
     }
+
+
 }
