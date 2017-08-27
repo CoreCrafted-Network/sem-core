@@ -17,7 +17,7 @@ database:
 
 
 # +-------------------------+
-# |  Life Configuration    |
+# |  Life Configuration     |
 # +-------------------------+`
 initial_life: 3
 

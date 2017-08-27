@@ -11,7 +11,6 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -22,15 +21,16 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 
 public class AppLaunch extends JavaPlugin implements PluginMessageListener {
     private PluginDescriptionFile pdf = getDescription();
     private ConsoleCommandSender console = getServer().getConsoleSender();
     private FileConfiguration config, messages;
-    private File configf, messagesf;
     private Connection connection;
     private LuckPermsApi luckPermsApi;
     private LifeGenerator lifeGenerator;
@@ -52,7 +52,7 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
         checkTablesExist();
         console.sendMessage(ColorParser.parse(header + " &7>> Registering commands and events...."));
         getCommand("sem").setExecutor(new CommandHandler(this));
-        getServer().getPluginManager().registerEvents(new DeathHandler(this), this);
+        getServer().getPluginManager().registerEvents(new EventsHandler(this), this);
         console.sendMessage(ColorParser.parse(header + " &7>> Hooking into PlaceholderAPI....."));
         hookPlaceholderAPI();
         console.sendMessage(ColorParser.parse(header + " &7>> Hooking into LuckPerms"));
@@ -81,8 +81,8 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
         if (!(getDataFolder().exists())) {
             getDataFolder().mkdir();
         }
-        configf = new File(getDataFolder(), "config.yml");
-        messagesf = new File(getDataFolder(), "messages.yml");
+        File configf = new File(getDataFolder(), "config.yml");
+        File messagesf = new File(getDataFolder(), "messages.yml");
         if (!configf.exists()) {
             saveResource("config.yml", false);
             console.sendMessage(ColorParser.parse(header + " &8- Creating missing config.yml ....."));
@@ -195,4 +195,5 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
     public LifeGenerator getLifeGenerator() {
         return lifeGenerator;
     }
+
 }

@@ -20,3 +20,5 @@ normal-death:
 player-kill-death:
   - '%semcore_header% &6You just killed by a player and this death will NOT deduct your life'
   - '%semcore_header% &6Better luck next time :)'
+
+dead-join-deny: '&cYou are out of life right now, please wait until your life is restored'

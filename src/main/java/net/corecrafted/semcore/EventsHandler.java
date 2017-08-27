@@ -3,12 +3,14 @@ package net.corecrafted.semcore;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.lucko.luckperms.api.User;
 import net.corecrafted.semcore.utils.ColorParser;
+import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.sql.*;
@@ -16,10 +18,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class DeathHandler implements Listener {
+public class EventsHandler implements Listener {
     private AppLaunch plugin;
 
-    public DeathHandler(AppLaunch plugin) {
+    public EventsHandler(AppLaunch plugin) {
         this.plugin = plugin;
     }
 
@@ -98,9 +100,9 @@ public class DeathHandler implements Listener {
 
                 // it is not a new player
             } else {
-                if (u.getLife() <= 0) {
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> plugin.sendPlayerToServer(p, "hub"), 2);
-                }
+//                if (u.getLife() <= 0) {
+//                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> plugin.sendPlayerToServer(p, "hub"), 2);
+//                }
                 statement = connection.prepareStatement("UPDATE player_lifes SET max_life=? WHERE uuid=?");
                 Set<String> ranks = plugin.getConfig().getConfigurationSection("max_life").getKeys(false);
                 if (ranks.contains(user.getPrimaryGroup())) {
@@ -127,11 +129,19 @@ public class DeathHandler implements Listener {
     }
 
     @EventHandler
+    public void onLogin(PlayerLoginEvent e){
+        SEMUser user = new SEMUser(e.getPlayer(),plugin);
+        if (user.isOutOfLife()){
+            String deny = plugin.getMessages().getString("dead-join-deny");
+            e.disallow(PlayerLoginEvent.Result.KICK_OTHER,ColorParser.parse(PlaceholderAPI.setPlaceholders(e.getPlayer(),deny)));
+        }
+    }
+
+    @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
         SEMUser user = new SEMUser(e.getPlayer(), plugin);
-        if (user.getLife() <= 0) {
+        if (user.isOutOfLife()) {
             plugin.sendPlayerToServer(e.getPlayer(), "hub");
         }
-
     }
 }
