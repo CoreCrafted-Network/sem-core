@@ -57,6 +57,7 @@ public class EventsHandler implements Listener {
             //check if the player is out of life
             SEMUser user = new SEMUser(p, plugin);
             if (user.isOutOfLife()) {
+                p.spigot().respawn();
                 plugin.sendPlayerToServer(p, "hub");
             }
 

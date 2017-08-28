@@ -37,6 +37,7 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
 
     private String header = "&7[&2SEM Core&7]";
 
+    @Override
     public void onEnable() {
         console.sendMessage(ColorParser.parse("&8-=-=-=-=-=-=-=[ &aSEM Core &8]=-=-=-=-=-=-="));
         console.sendMessage(ColorParser.parse("> Plugin: &2SEM Core"));
@@ -75,6 +76,11 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
         }
     }
 
+    @Override
+    public void onDisable() {
+        lifeGenerator.outputFile();
+        console.sendMessage(ColorParser.parse(header + " &2>> Saved life generator data"));
+    }
 
     void loadFiles() {
 

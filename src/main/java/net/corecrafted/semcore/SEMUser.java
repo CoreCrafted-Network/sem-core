@@ -27,7 +27,7 @@ public class SEMUser {
             res.next();
             return res.getInt(1);
         } catch (SQLException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             return -1;
         } finally {
             try {
@@ -36,7 +36,6 @@ public class SEMUser {
                 e.printStackTrace();
             }
         }
-
     }
 
     public int getMax_life() {
@@ -50,7 +49,7 @@ public class SEMUser {
             res.next();
             return res.getInt(1);
         } catch (SQLException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             return -1;
         } finally {
             try {
@@ -59,7 +58,26 @@ public class SEMUser {
                 e.printStackTrace();
             }
         }
+    }
 
+    public void setLife(int life){
+        Map map = plugin.getDbConnInfo();
+        Connection connection=null;
+        try {
+            connection = DriverManager.getConnection("jdbc:" + (String) map.get("host") + "/" + (String) map.get("schema"), (String) map.get("username"), (String) map.get("password"));
+            PreparedStatement statement = connection.prepareStatement("UPDATE player_lifes SET current_life=? WHERE uuid=?");
+            statement.setInt(1,life);
+            statement.setString(2, player.getUniqueId().toString().replaceAll("-", ""));
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public boolean isOutOfLife() {

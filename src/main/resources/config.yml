@@ -58,7 +58,7 @@ regen_life:
   obsidian: 8
   bedrock: 9
   nova: 10
-  # Max life of staffs
+  # Max regen life of staffs
   staff: 8
 
 # Counting in minutes
