@@ -19,7 +19,6 @@ public class LifeGenerator {
 
         // Load generator data if it exists
         readFile();
-        outputFile();
 //        System.out.println(plugin.getDataFolder().toString()+"\\regen.data");
         regenClock();
         saveFileClock();
@@ -50,6 +49,7 @@ public class LifeGenerator {
             out.writeObject(generateSet);
             out.close();
             fileout.close();
+            plugin.getConsole().sendMessage(ColorParser.parse(plugin.getHeader() + " &7>> Regen data saved"));
         } catch (IOException e) {
             e.printStackTrace();
         }
