@@ -61,18 +61,21 @@ public class LifeGenerator {
             SEMUser user = new SEMUser(player, plugin);
             User luckpermUser = plugin.getLuckPermsApi().getUser(player.getUniqueId());
             // Check if the player is already inside
-            if (generateSet.containsKey(player.getUniqueId())) {
-                if (user.getLife() < plugin.getConfig().getInt("regen_life" + luckpermUser.getPrimaryGroup())) {
-                    // Schedule next regen time for player life less than regen limit
-                    generateSet.put(player.getUniqueId(), System.currentTimeMillis() / 1000 + plugin.getConfig().getInt("life-regen-interval") * 60);
-                }
-                // Check for time up players
-                if (System.currentTimeMillis() / 1000 > generateSet.get(player.getUniqueId())) {
-                    // if someone time up, add one life and move them away from the list (reschedule)
-                    user.setLife(user.getLife() + 1);
-                    generateSet.remove(player.getUniqueId());
+
+            if (user.getLife() < plugin.getConfig().getInt("regen_life" + luckpermUser.getPrimaryGroup())) {
+                // Schedule next regen time for player life less than regen limit
+                generateSet.put(player.getUniqueId(), System.currentTimeMillis() / 1000 + plugin.getConfig().getInt("life-regen-interval") * 60);
+                if (generateSet.containsKey(player.getUniqueId())) {
+                    // Check for time up players
+                    if (System.currentTimeMillis() / 1000 > generateSet.get(player.getUniqueId())) {
+                        // if someone time up, add one life and move them away from the list (reschedule)
+                        user.setLife(user.getLife() + 1);
+                        generateSet.remove(player.getUniqueId());
+                    }
                 }
             }
+
+
 
         }), 1, 40);
     }
