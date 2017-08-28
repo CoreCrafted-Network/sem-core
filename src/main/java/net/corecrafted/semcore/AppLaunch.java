@@ -79,7 +79,7 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
     @Override
     public void onDisable() {
         lifeGenerator.outputFile();
-        console.sendMessage(ColorParser.parse(header + " &2>> Saved life generator data"));
+        console.sendMessage(ColorParser.parse(header + " &7>> Saved life generator data"));
     }
 
     void loadFiles() {
