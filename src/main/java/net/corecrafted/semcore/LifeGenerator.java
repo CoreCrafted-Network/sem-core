@@ -22,6 +22,7 @@ public class LifeGenerator {
         outputFile();
 //        System.out.println(plugin.getDataFolder().toString()+"\\regen.data");
         regenClock();
+        saveFileClock();
     }
 
     private void readFile() {
@@ -81,7 +82,7 @@ public class LifeGenerator {
     }
 
     private void saveFileClock() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::outputFile, 1, 2400);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::outputFile, 1, plugin.getConfig().getInt("data-save-interval")*60*20);
     }
 
 

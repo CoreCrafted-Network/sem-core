@@ -63,3 +63,6 @@ regen_life:
 
 # Counting in minutes
 life-regen-interval: 120
+
+# Also in minutes
+data-save-interval: 3
