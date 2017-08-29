@@ -19,12 +19,9 @@ public class SEMUser {
     public SEMUser(String playername, AppLaunch plugin){
         this.plugin=plugin;
         String noDash = new UUIDFetcher(plugin).fetchUUID(playername);
-        System.out.print(noDash);
         // ecee956b3ffa4796b51abeefa7c3854b
         // ecee956b-3ffa-4796-b51a-beefa7c3854b
         this.uuid= UUID.fromString(noDash.substring(0,8)+"-"+noDash.substring(8,12)+"-"+noDash.substring(12,16)+"-"+noDash.substring(16,20)+"-"+noDash.substring(20));
-        System.out.print(uuid.toString());
-        System.out.print(uuid);
     }
 
     public int getLife() {
@@ -81,8 +78,25 @@ public class SEMUser {
             statement.setInt(1,life);
             statement.setString(2, uuid.toString().replaceAll("-", ""));
             statement.execute();
-//            System.out.println("Updating query");
-//            System.out.println("8 "+uuid.toString().replaceAll("-", "")+" "+life);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public void addLife(int number){
+        Map map = plugin.getDbConnInfo();
+        Connection connection=null;
+        try {
+            connection = DriverManager.getConnection("jdbc:" + (String) map.get("host") + "/" + (String) map.get("schema"), (String) map.get("username"), (String) map.get("password"));
+            PreparedStatement statement = connection.prepareStatement("UPDATE player_lifes SET current_life=? WHERE uuid=?");
+            statement.setInt(1,getLife()+number);
+            statement.setString(2, uuid.toString().replaceAll("-", ""));
+            statement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {

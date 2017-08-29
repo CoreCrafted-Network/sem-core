@@ -35,7 +35,7 @@ public class CommandHandler implements CommandExecutor {
                 });
             }
 
-            // TODO Player commands
+
             if (args[0].equalsIgnoreCase("player")) {
                 if (args.length == 1) {
                     sendPlayerHelp(commandSender);
