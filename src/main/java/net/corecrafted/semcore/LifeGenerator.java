@@ -73,7 +73,6 @@ public class LifeGenerator {
                             System.out.print("Added " + player.getName() + " to the regen set");
                         }
                         // Check for time up players
-
                     }
                     if (generateSet.containsKey(player.getUniqueId()) && System.currentTimeMillis() / 1000 > generateSet.get(player.getUniqueId())) {
                         // if someone time up, add one life and move them away from the list (reschedule)

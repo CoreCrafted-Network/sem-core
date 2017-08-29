@@ -18,7 +18,8 @@ public class SEMUser {
 
     public SEMUser(String playername, AppLaunch plugin){
         this.plugin=plugin;
-        this.uuid=UUID.fromString(new UUIDFetcher(plugin).fetchUUID(playername));
+        String noDash = new UUIDFetcher(plugin).fetchUUID(playername);
+        this.uuid= UUID.fromString(new StringBuilder(noDash).insert(8,"-").insert(12,"-").insert(16,"-").insert(20,"-").toString());
     }
 
     public int getLife() {
