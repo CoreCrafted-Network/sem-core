@@ -9,12 +9,15 @@
 # +-------------------------+
 # | Database Configuration  |
 # +-------------------------+
+
+# Main life controller database
 database:
   host: 'mysql://localhost:3306'
   username: 'root'
   password: 'toor'
   schema: 'sem_core'
-
+  players_central: 'players_central'
+  # That is just for retrieving the player-uuid
 
 # +-------------------------+
 # |  Life Configuration     |
@@ -62,7 +65,7 @@ regen_life:
   staff: 8
 
 # Counting in minutes
-life-regen-interval: 120
+life-regen-interval: 30
 
 # Also in minutes
 data-save-interval: 3

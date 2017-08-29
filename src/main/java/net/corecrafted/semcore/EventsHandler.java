@@ -55,7 +55,7 @@ public class EventsHandler implements Listener {
             deathMsg.forEach(msg -> p.sendMessage(ColorParser.parse(PlaceholderAPI.setPlaceholders(p, msg))));
 
             //check if the player is out of life
-            SEMUser user = new SEMUser(p, plugin);
+            SEMUser user = new SEMUser(p.getUniqueId(), plugin);
             if (user.isOutOfLife()) {
                 p.spigot().respawn();
                 plugin.sendPlayerToServer(p, "hub");
@@ -75,7 +75,7 @@ public class EventsHandler implements Listener {
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
         User user = plugin.getLuckPermsApi().getUser(p.getUniqueId());
-        SEMUser u = new SEMUser(p, plugin);
+        SEMUser u = new SEMUser(p.getUniqueId(), plugin);
         Connection connection = null;
         try {
             Map map = plugin.getDbConnInfo();
@@ -131,7 +131,7 @@ public class EventsHandler implements Listener {
 
     @EventHandler
     public void onLogin(PlayerLoginEvent e){
-        SEMUser user = new SEMUser(e.getPlayer(),plugin);
+        SEMUser user = new SEMUser(e.getPlayer().getUniqueId(),plugin);
         if (user.isOutOfLife()){
             String deny = plugin.getMessages().getString("dead-join-deny");
             e.disallow(PlayerLoginEvent.Result.KICK_OTHER,ColorParser.parse(PlaceholderAPI.setPlaceholders(e.getPlayer(),deny)));
@@ -140,7 +140,7 @@ public class EventsHandler implements Listener {
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
-        SEMUser user = new SEMUser(e.getPlayer(), plugin);
+        SEMUser user = new SEMUser(e.getPlayer().getUniqueId(), plugin);
         if (user.isOutOfLife()) {
             plugin.sendPlayerToServer(e.getPlayer(), "hub");
         }

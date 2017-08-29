@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import me.lucko.luckperms.LuckPerms;
 import me.lucko.luckperms.api.LuckPermsApi;
+import net.corecrafted.semcore.cmd.CommandHandler;
 import net.corecrafted.semcore.utils.ColorParser;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
@@ -21,16 +22,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
-
+//TODO UUID file
 
 public class AppLaunch extends JavaPlugin implements PluginMessageListener {
     private PluginDescriptionFile pdf = getDescription();
     private ConsoleCommandSender console = getServer().getConsoleSender();
-    private FileConfiguration config, messages;
+    private FileConfiguration config, messages, uuidmap;
     private Connection connection;
     private LuckPermsApi luckPermsApi;
     private LifeGenerator lifeGenerator;
@@ -82,7 +81,7 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
         console.sendMessage(ColorParser.parse(header + " &7>> Saved life generator data"));
     }
 
-    void loadFiles() {
+    public void loadFiles() {
 
         if (!(getDataFolder().exists())) {
             getDataFolder().mkdir();
@@ -97,9 +96,9 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
             saveResource("messages.yml", false);
             console.sendMessage(ColorParser.parse(header + " &8- Creating missing messages.yml ....."));
         }
+
         config = new YamlConfiguration();
         messages = new YamlConfiguration();
-
         try {
             config.load(configf);
             messages.load(messagesf);
@@ -202,4 +201,7 @@ public class AppLaunch extends JavaPlugin implements PluginMessageListener {
         return lifeGenerator;
     }
 
+    public FileConfiguration getUuidmap() {
+        return uuidmap;
+    }
 }

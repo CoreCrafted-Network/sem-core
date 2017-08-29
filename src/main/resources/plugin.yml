@@ -1,6 +1,6 @@
 name: SEM-Core
 main: net.corecrafted.semcore.AppLaunch
-version: 1.2.11-BETA
+version: 1.2.12-BETA
 descripton: Core Implementation of Survival Expert Mode Server
 author: ThisTNTSquid
 depend: [PlaceholderAPI, LuckPerms]
@@ -8,3 +8,6 @@ commands:
   sem:
     description: SEM Core main command
     usage: /sem [argument]
+permissions:
+  sem.control:
+    description: Give access to the /sem control
