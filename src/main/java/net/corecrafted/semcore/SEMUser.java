@@ -19,7 +19,12 @@ public class SEMUser {
     public SEMUser(String playername, AppLaunch plugin){
         this.plugin=plugin;
         String noDash = new UUIDFetcher(plugin).fetchUUID(playername);
-        this.uuid= UUID.fromString(new StringBuilder(noDash).insert(8,"-").insert(12,"-").insert(16,"-").insert(20,"-").toString());
+        System.out.print(noDash);
+        // ecee956b3ffa4796b51abeefa7c3854b
+        // ecee956b-3ffa-4796-b51a-beefa7c3854b
+        this.uuid= UUID.fromString(noDash.substring(0,8)+"-"+noDash.substring(8,12)+"-"+noDash.substring(12,16)+"-"+noDash.substring(16,20)+"-"+noDash.substring(20));
+        System.out.print(uuid.toString());
+        System.out.print(uuid);
     }
 
     public int getLife() {
@@ -76,6 +81,8 @@ public class SEMUser {
             statement.setInt(1,life);
             statement.setString(2, uuid.toString().replaceAll("-", ""));
             statement.execute();
+//            System.out.println("Updating query");
+//            System.out.println("8 "+uuid.toString().replaceAll("-", "")+" "+life);
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -97,4 +104,7 @@ public class SEMUser {
         return plugin.getLifeGenerator().getGenerateSet().get(uuid);
     }
 
+    public UUID getUuid() {
+        return uuid;
+    }
 }

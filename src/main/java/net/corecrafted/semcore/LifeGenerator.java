@@ -83,7 +83,7 @@ public class LifeGenerator {
                         generateSet.remove(player.getUniqueId());
                     }
                 }
-                System.out.println(player.getName());
+//                System.out.println(player.getName());
             });
         }, 1, 40);
     }

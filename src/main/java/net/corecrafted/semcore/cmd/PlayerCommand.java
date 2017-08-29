@@ -30,6 +30,7 @@ public class PlayerCommand implements BaseCommand {
                         if (args.size()>2){
                             // Have value input
                             user.setLife(Integer.parseInt(args.get(2)));
+//                            System.out.println(Integer.parseInt(args.get(2))+" "+user.getUuid());
                         } else {
                             // Did not put any value to set
                             sender.sendMessage(ColorParser.parse("&cPlease specify a value"));
