@@ -92,7 +92,6 @@ public class LifeGenerator {
     private void saveFileClock() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
             outputFile();
-            System.out.println("Save");
         }, 1, plugin.getConfig().getInt("data-save-interval") * 60 * 20);
     }
 

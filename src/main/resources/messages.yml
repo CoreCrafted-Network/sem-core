@@ -4,6 +4,7 @@
 # %semcore_header% - header of for the plugin messages
 # %semcore_current_life% - Current amount of life left
 # %semcore_max_life% - Current maximum amount of life
+# %semcore_next_life_time% - When will the next life be regenerated
 
 header: '&7[&2SEM Core&7]'
 no-permission: '%semcore_header% &cYou are not supposed to change the dimension behavior!'
@@ -11,7 +12,6 @@ no-db-connection: '%semcore_header% &cUnable to connect to database server, plea
 
 
 # =======[Death Handling Messages]=============
-# Available placeholders:
 
 
 normal-death:
@@ -21,4 +21,4 @@ player-kill-death:
   - '%semcore_header% &6You just killed by a player and this death will NOT deduct your life'
   - '%semcore_header% &6Better luck next time :)'
 
-dead-join-deny: '&cYou are out of life right now, please wait until your life is restored'
+dead-join-deny: '&cYou are out of life right now, please wait until your life is restored. &cYour next life will be regenerated at &6%semcore_next_life_time%'
