@@ -69,3 +69,6 @@ life-regen-interval: 30
 
 # Also in minutes
 data-save-interval: 3
+
+# Set this to true for bug inspection
+debug: false
