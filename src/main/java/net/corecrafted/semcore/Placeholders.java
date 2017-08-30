@@ -30,7 +30,7 @@ public class Placeholders extends EZPlaceholderHook {
                 // Convert the Date object to string
                 // return the string
                 // I'M A ONE LINER MUAHAHAA
-                return new Date(new SEMUser(p.getUniqueId(), plugin).getNextLifeTime()).toString();
+                return new Date(new SEMUser(p.getUniqueId(), plugin).getNextLifeTime()*1000).toString();
             default:
                 return s;
         }
