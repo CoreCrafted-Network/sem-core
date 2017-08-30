@@ -72,7 +72,7 @@ public class EventsHandler implements Listener {
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
+    public void onJoin(PlayerLoginEvent e) {
         Player p = e.getPlayer();
         User user = plugin.getLuckPermsApi().getUser(p.getUniqueId());
         SEMUser u = new SEMUser(p.getUniqueId(), plugin);
@@ -101,9 +101,12 @@ public class EventsHandler implements Listener {
 
                 // it is not a new player
             } else {
-//                if (u.getLife() <= 0) {
-//                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> plugin.sendPlayerToServer(p, "hub"), 2);
-//                }
+                // Check if the player is out of life
+                if (u.isOutOfLife()) {
+                    String deny = plugin.getMessages().getString("dead-join-deny");
+                    e.disallow(PlayerLoginEvent.Result.KICK_OTHER, ColorParser.parse(PlaceholderAPI.setPlaceholders(e.getPlayer(), deny)));
+                    return;
+                }
                 statement = connection.prepareStatement("UPDATE player_lifes SET max_life=? WHERE uuid=?");
                 Set<String> ranks = plugin.getConfig().getConfigurationSection("max_life").getKeys(false);
                 if (ranks.contains(user.getPrimaryGroup())) {
@@ -130,12 +133,8 @@ public class EventsHandler implements Listener {
     }
 
     @EventHandler
-    public void onLogin(PlayerLoginEvent e){
-        SEMUser user = new SEMUser(e.getPlayer().getUniqueId(),plugin);
-        if (user.isOutOfLife()){
-            String deny = plugin.getMessages().getString("dead-join-deny");
-            e.disallow(PlayerLoginEvent.Result.KICK_OTHER,ColorParser.parse(PlaceholderAPI.setPlaceholders(e.getPlayer(),deny)));
-        }
+    public void onLogin(PlayerLoginEvent e) {
+
     }
 
     @EventHandler

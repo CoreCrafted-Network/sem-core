@@ -1,7 +1,6 @@
 package net.corecrafted.semcore;
 
 import net.corecrafted.semcore.utils.UUIDFetcher;
-import org.bukkit.entity.Player;
 
 import java.sql.*;
 import java.util.Map;

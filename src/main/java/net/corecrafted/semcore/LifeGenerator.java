@@ -83,12 +83,13 @@ public class LifeGenerator {
                     SEMUser user = new SEMUser(uuid, plugin);
                     // if someone time up, add one life and move them away from the list (reschedule)
                     if (plugin.getConfig().getBoolean("debug")) {
-                        plugin.getConsole().sendMessage(ColorParser.parse(plugin.getHeader() + " &8- 1 life regenerated for " + Bukkit.getOfflinePlayer(user.getUuid())));
+                        plugin.getConsole().sendMessage(ColorParser.parse(plugin.getHeader() + " &8- 1 life regenerated for " + Bukkit.getOfflinePlayer(user.getUuid()).getName()));
                     }
                     user.addLife(1);
+                    Bukkit.getPlayer(uuid).sendMessage(ColorParser.parse(plugin.getHeader()+" &a1 Life has been regenerated"));
                     generateSet.remove(uuid);
                 }
-            }),5);
+            }),20);
 
         }, 1, 40);
     }
