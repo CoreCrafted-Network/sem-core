@@ -3,7 +3,9 @@ package net.corecrafted.semcore;
 import me.clip.placeholderapi.external.EZPlaceholderHook;
 import org.bukkit.entity.Player;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class Placeholders extends EZPlaceholderHook {
     private AppLaunch plugin;
@@ -30,7 +32,14 @@ public class Placeholders extends EZPlaceholderHook {
                 // Convert the Date object to string
                 // return the string
                 // I'M A ONE LINER MUAHAHAA
-                return new Date(new SEMUser(p.getUniqueId(), plugin).getNextLifeTime()*1000).toString();
+                long nextLifeTime = new SEMUser(p.getUniqueId(), plugin).getNextLifeTime();
+                if (nextLifeTime==0){
+                    return "N/A";
+                }
+                Date date = new Date(nextLifeTime*1000);
+                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
+                sdf.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+                return sdf.format(date);
             default:
                 return s;
         }

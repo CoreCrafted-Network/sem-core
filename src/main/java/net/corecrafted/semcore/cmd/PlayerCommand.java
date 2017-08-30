@@ -11,7 +11,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
+import java.util.TimeZone;
 
 public class PlayerCommand implements BaseCommand {
     AppLaunch plugin;
@@ -87,7 +90,7 @@ public class PlayerCommand implements BaseCommand {
                 Player player = Bukkit.getPlayer(args.get(0));
                 if (player != null) {
                     //TODO Display stats
-                    sendPlayerInfo(player,sender);
+                    sendPlayerInfo(player, sender);
 
                 } else {
                     // Targeting player that is not online / not exist
@@ -103,17 +106,24 @@ public class PlayerCommand implements BaseCommand {
         return true;
     }
 
-    private void sendPlayerInfo(Player p,CommandSender sender){
-        SEMUser user = new SEMUser(p.getUniqueId(),plugin);
+    private void sendPlayerInfo(Player p, CommandSender sender) {
+        SEMUser user = new SEMUser(p.getUniqueId(), plugin);
         Location loc = p.getLocation();
-        sender.sendMessage(ColorParser.parse("&6-=-=-=-=-=&e[ "+p.getName()+" &6]=-=-=-=-=-"));
-        sender.sendMessage(ColorParser.parse("&6Loc: (&e"+p.getWorld().toString()+"&6) "+loc.getBlockX()+"&6/&e"+loc.getBlockY()+"&6/&e"+loc.getBlockZ()));
-        p.getUniqueId();
-        p.getExp();
-        p.getHealthScale();
-        p.getHealth();p.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-        user.getLife();user.getMax_life();
-        user.getNextLifeTime();
+        sender.sendMessage(ColorParser.parse("&6-=-=-=-=-=&6[&e " + p.getName() + " &6]=-=-=-=-=-"));
+        sender.sendMessage(ColorParser.parse("&e> UUID: &6" + p.getUniqueId()));
+        sender.sendMessage(ColorParser.parse("&e> Loc: (&6" + p.getWorld().getName() + "&e) &6" + loc.getBlockX() + "&e/&6" + loc.getBlockY() + "&e/&6" + loc.getBlockZ()));
+        sender.sendMessage(ColorParser.parse("&e> Exp: &6"+p.getTotalExperience()+" &e(&6Lv"+p.getLevel()+"&e)"));
+        sender.sendMessage(ColorParser.parse("&e> Health: &6"+p.getHealth()+"&e/&6"+p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()));
+        sender.sendMessage(ColorParser.parse("&c> Life: "+user.getLife()+"/"+user.getMax_life()));
+        long nextLifeTime = user.getNextLifeTime();
+        if (nextLifeTime==0){
+            sender.sendMessage(ColorParser.parse("&c> Next Life: Not needed"));
+        } else {
+            Date date = new Date(nextLifeTime*1000);
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
+            sdf.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+            sender.sendMessage(ColorParser.parse("&c> Next Life: "+sdf.format(date)));
+        }
 
 
 

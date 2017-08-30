@@ -115,7 +115,11 @@ public class SEMUser {
 
     // Return when will the next life come back
     public long getNextLifeTime(){
-        return plugin.getLifeGenerator().getGenerateSet().get(uuid);
+        try{
+            return plugin.getLifeGenerator().getGenerateSet().get(uuid);
+        } catch (NullPointerException e){
+            return 0;
+        }
     }
 
     public UUID getUuid() {

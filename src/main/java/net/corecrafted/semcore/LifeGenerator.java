@@ -69,22 +69,27 @@ public class LifeGenerator {
                     // Schedule next regen time for player life less than regen limit
                     if (!generateSet.containsKey(player.getUniqueId())) {
                         generateSet.put(player.getUniqueId(), System.currentTimeMillis() / 1000 + plugin.getConfig().getInt("life-regen-interval") * 60);
-                        if (plugin.getConfig().getBoolean("debug")){
+                        if (plugin.getConfig().getBoolean("debug")) {
                             System.out.print("Added " + player.getName() + " to the regen set");
                         }
-                        // Check for time up players
-                    }
-                    if (generateSet.containsKey(player.getUniqueId()) && System.currentTimeMillis() / 1000 > generateSet.get(player.getUniqueId())) {
-                        // if someone time up, add one life and move them away from the list (reschedule)
-                        if (plugin.getConfig().getBoolean("debug")){
-                            plugin.getConsole().sendMessage(ColorParser.parse(plugin.getHeader() + " &8- 1 life regenerated for " + player.getName()));
-                        }
-                        user.setLife(user.getLife() + 1);
-                        generateSet.remove(player.getUniqueId());
+
                     }
                 }
 //                System.out.println(player.getName());
             });
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> generateSet.forEach((uuid, time) -> {
+                // Check for time up players
+                if (System.currentTimeMillis() / 1000 > generateSet.get(uuid)) {
+                    SEMUser user = new SEMUser(uuid, plugin);
+                    // if someone time up, add one life and move them away from the list (reschedule)
+                    if (plugin.getConfig().getBoolean("debug")) {
+                        plugin.getConsole().sendMessage(ColorParser.parse(plugin.getHeader() + " &8- 1 life regenerated for " + Bukkit.getOfflinePlayer(user.getUuid())));
+                    }
+                    user.addLife(1);
+                    generateSet.remove(uuid);
+                }
+            }),5);
+
         }, 1, 40);
     }
 
