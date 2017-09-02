@@ -43,15 +43,32 @@ public class CommandHandler implements CommandExecutor {
                     LinkedList<String> list = new LinkedList<>(Arrays.asList(args));
                     list.pollFirst();
                     list.pollFirst();
-                    return new PlayerCommand().execute(plugin,commandSender, cmdObj, s, args[1], list);
+                    return new PlayerCommand().execute(plugin, commandSender, cmdObj, s, args[1], list);
                 }
 
 
+            } else if (args[0].equalsIgnoreCase("recipe")) {
+                if (args.length == 1) {
+                    sendRecipesHelp(commandSender);
+                } else {
+                    LinkedList<String> list = new LinkedList<>(Arrays.asList(args));
+                    list.pollFirst();
+                    list.pollFirst();
+                    return new RecipeCommand().execute(plugin,commandSender,cmdObj,s,args[1],list);
+                }
             }
             return true;
         } else
             commandSender.sendMessage(ColorParser.parse(plugin.getMessages().getString("no-permission").replaceAll("%header%", plugin.getHeader())));
         return true;
+    }
+
+    private void sendRecipesHelp(CommandSender sender) {
+        sender.sendMessage(ColorParser.parse("&8-=-=-=-=-=[ &aSEM Core Help &8]=-=-=-=-=-"));
+        sender.sendMessage(ColorParser.parse("&a/sem recipe set [regular|r] <id> <shaped?>"));
+        sender.sendMessage(ColorParser.parse("&a/sem recipe set [furnace|f] <id>"));
+        sender.sendMessage(ColorParser.parse("&a/sem recipe set [advanced|a] <id> <shaped?>"));
+        sender.sendMessage(ColorParser.parse("&a/sem recipe remove <id>"));
     }
 
 
@@ -74,6 +91,7 @@ public class CommandHandler implements CommandExecutor {
         sender.sendMessage(ColorParser.parse("&a/sem help,? &e- Display this help message"));
         sender.sendMessage(ColorParser.parse("&a/sem player &e- Show a list of operations on players"));
         sender.sendMessage(ColorParser.parse("&a/sem items &e- This option is not working"));
+        sender.sendMessage(ColorParser.parse("&a/sem recipe &e- Show a list of recipes commands"));
         sender.sendMessage(ColorParser.parse("&a/sem reload &e- Reloads config and messages"));
     }
 }

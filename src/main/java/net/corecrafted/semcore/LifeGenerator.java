@@ -5,6 +5,7 @@ import net.corecrafted.semcore.utils.ColorParser;
 import org.bukkit.Bukkit;
 
 import java.io.*;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -77,21 +78,23 @@ public class LifeGenerator {
                 }
 //                System.out.println(player.getName());
             });
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> generateSet.forEach((uuid, time) -> {
-                // Check for time up players
-                if (System.currentTimeMillis() / 1000 > generateSet.get(uuid)) {
-                    SEMUser user = new SEMUser(uuid, plugin);
-                    // if someone time up, add one life and move them away from the list (reschedule)
-                    if (plugin.getConfig().getBoolean("debug")) {
-                        plugin.getConsole().sendMessage(ColorParser.parse(plugin.getHeader() + " &8- 1 life regenerated for " + Bukkit.getOfflinePlayer(user.getUuid()).getName()));
+            try {
+                generateSet.forEach((uuid, time) -> {
+                    // Check for time up players
+                    if (System.currentTimeMillis() / 1000 > generateSet.get(uuid)) {
+                        SEMUser user = new SEMUser(uuid, plugin);
+                        // if someone time up, add one life and move them away from the list (reschedule)
+                        if (plugin.getConfig().getBoolean("debug")) {
+                            plugin.getConsole().sendMessage(ColorParser.parse(plugin.getHeader() + " &8- 1 life regenerated for " + Bukkit.getOfflinePlayer(user.getUuid()).getName()));
+                        }
+                        user.addLife(1);
+                        Bukkit.getPlayer(uuid).sendMessage(ColorParser.parse(plugin.getHeader() + " &a1 Life has been regenerated"));
+                        generateSet.remove(uuid);
                     }
-                    user.addLife(1);
-                    Bukkit.getPlayer(uuid).sendMessage(ColorParser.parse(plugin.getHeader()+" &a1 Life has been regenerated"));
-                    generateSet.remove(uuid);
-                }
-            }),20);
+                });
+            } catch (ConcurrentModificationException e){ }
 
-        }, 1, 40);
+        },2,40);
     }
 
     private void saveFileClock() {

@@ -88,7 +88,6 @@ public class PlayerCommand implements BaseCommand {
                 // Full state
                 Player player = Bukkit.getPlayer(args.get(0));
                 if (player != null) {
-                    //TODO Display stats
                     sendPlayerInfo(player, sender);
 
                 } else {
