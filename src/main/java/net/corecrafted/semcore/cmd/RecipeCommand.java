@@ -1,9 +1,17 @@
 package net.corecrafted.semcore.cmd;
 
 import net.corecrafted.semcore.AppLaunch;
+import net.corecrafted.semcore.editor.EditingPlayer;
+import net.corecrafted.semcore.recipes.Displayable;
+import net.corecrafted.semcore.recipes.RegularRecipe;
 import net.corecrafted.semcore.utils.ColorParser;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 
 import java.util.LinkedList;
 //TODO Change bad ass error messages
@@ -16,6 +24,13 @@ public class RecipeCommand implements BaseCommand {
         // /sem   recipe   set   regular   dmgear   true
         this.plugin = plugin;
         if (cmd.equalsIgnoreCase("set")) {
+            // set only apply to player
+            if (!(sender instanceof Player)){
+                sender.sendMessage(ColorParser.parse("&cYou need to be a player to do this operation"));
+                return true;
+            }
+            Player player = ((Player) sender);
+
             //sem recipe set [?]
             if (args.size() > 0) {
                 if (args.get(0).equalsIgnoreCase("regular") || args.get(0).equalsIgnoreCase("r")) {
@@ -24,6 +39,20 @@ public class RecipeCommand implements BaseCommand {
                     if (args.size()>1){
                         String id = args.get(1);
                         //sem recipe set regular dmgear [?]
+                        if (args.size()>2){
+                            boolean isShaped = Boolean.getBoolean(args.get(2));
+                            // Display the edit panel
+                            Inventory inv = Bukkit.createInventory(null,InventoryType.DISPENSER,"Edit "+id);
+                            EditingPlayer.set.add(player);
+                            player.openInventory(inv);
+                            // Edit content handling at RegularRecipeEditor
+
+                        } else {
+                            // does not said whether it is shaped or not
+                            sender.sendMessage(ColorParser.parse("&cIs the recipe shaped then?? "));
+                            sender.sendMessage(ColorParser.parse("&8-=-=-=-=-=[ &aSEM Core Help &8]=-=-=-=-=-"));
+                            sender.sendMessage(ColorParser.parse("&a/sem recipe set [regular|r] <id> <shaped?>"));
+                        }
                     } else {
                         // no id present
                         sender.sendMessage(ColorParser.parse("&cGive your recipe a name!"));

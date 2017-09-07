@@ -6,6 +6,10 @@ import org.bukkit.inventory.Recipe;
 import java.util.ArrayList;
 
 public abstract class BaseRecipe implements Recipe,Displayable{
+    enum Type{
+        REGULAR,FURNACE,ADVANCED
+    }
+    Type type;
     ItemStack[] recipe;
     ItemStack result;
     String title;
@@ -32,5 +36,10 @@ public abstract class BaseRecipe implements Recipe,Displayable{
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public boolean saveRecipe(){
+        //TODO Save the recipe to file!
+        return true;
     }
 }
